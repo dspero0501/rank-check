@@ -7,15 +7,14 @@ const path = require("path");
 (async () => {
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
   });
   const page = await browser.newPage();
 
   await page.goto("https://www.lookpin.co.kr/home", { waitUntil: "networkidle2" });
 
-  // 기다리는 시간 (데이터가 다 뜰 때까지)
-  await new Promise(resolve => setTimeout(resolve, 5000));
-
+  // 인기상품 요소가 로딩될 때까지 기다림
+  await page.waitForSelector(".sc-88a90ba8-0.eYtZDO", { timeout: 10000 });
 
   const data = await page.evaluate(() => {
     const items = Array.from(document.querySelectorAll(".sc-88a90ba8-0.eYtZDO"));
@@ -26,7 +25,7 @@ const path = require("path");
       return {
         순위: idx + 1,
         상품명: name,
-        판매가: price,
+        판매가: price
       };
     });
   });
