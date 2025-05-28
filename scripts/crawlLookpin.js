@@ -12,7 +12,8 @@ const path = require("path");
   await page.goto("https://www.lookpin.co.kr/home", { waitUntil: "networkidle2" });
 
   // 렌더링 시간 확보
-  await page.waitForTimeout(7000);
+  await new Promise(resolve => setTimeout(resolve, 7000));
+
 
   const data = await page.evaluate(() => {
     const items = Array.from(document.querySelectorAll("div[class*='eYtZDO']"));
