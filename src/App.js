@@ -50,9 +50,12 @@ export default function LookpinRankAnalyzer() {
     const rows = [];
     let i = 0;
     let rank = 1;
-    while (i < lines.length) {
-      const discount = lines[i];
-      const price = lines[i + 1];
+
+    while (i < lines.length - 5) {
+      const discount = /%$/.test(lines[i]) ? lines[i] : "";
+      const priceLine = lines[i + 1];
+      const priceMatch = priceLine.match(/(\d{1,3}(,\d{3})*)/);
+      const price = priceMatch ? priceMatch[0].replace(/,/g, "") : "";
 
       let j = i + 2;
       let productName = "";
