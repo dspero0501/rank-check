@@ -49,19 +49,33 @@ export default function LookpinRankAnalyzer() {
     const lines = rawText.split("\n").map(line => line.trim()).filter(Boolean);
     const rows = [];
     let i = 0;
+    let rank = 1;
     while (i < lines.length) {
       const discount = lines[i];
       const price = lines[i + 1];
-      let name = lines[i + 2];
-      let j = i + 3;
-      while (j < lines.length && !/^\d+(\.\d+)?$/.test(lines[j]) && !/^\d+,?\d*원$/.test(lines[j])) {
-        name += " " + lines[j];
+
+      let j = i + 2;
+      let productName = "";
+      while (j < lines.length && !/^\d+(\.\d+)?$/.test(lines[j])) {
+        productName += (productName ? " " : "") + lines[j];
         j++;
       }
+
       const rating = lines[j];
       const review = lines[j + 1];
-      const shipping = lines[j + 2] === "배송우수" ? "O" : "X";
-      rows.push({ 할인율: discount, 판매가: price, 상품명: name, 평점: rating, 리뷰수: review, 배송우수: shipping });
+      const shippingLine = lines[j + 2] || "";
+      const shipping = shippingLine.includes("배송우수") ? "O" : "X";
+
+      rows.push({
+        순위: rank++,
+        할인율: discount,
+        판매가: price,
+        상품명: productName,
+        평점: rating,
+        리뷰수: review,
+        배송우수: shipping
+      });
+
       i = shipping === "O" ? j + 3 : j + 2;
     }
     return rows;
@@ -144,6 +158,7 @@ export default function LookpinRankAnalyzer() {
           <table className="w-full border mt-4 text-sm">
             <thead>
               <tr className="bg-gray-100">
+                <th className="border px-2 py-1">순위</th>
                 <th className="border px-2 py-1">할인율</th>
                 <th className="border px-2 py-1">판매가</th>
                 <th className="border px-2 py-1">상품명</th>
@@ -155,6 +170,7 @@ export default function LookpinRankAnalyzer() {
             <tbody>
               {formattedRows.map((row, idx) => (
                 <tr key={idx}>
+                  <td className="border px-2 py-1 text-center">{row["순위"]}</td>
                   <td className="border px-2 py-1 text-center">{row["할인율"]}</td>
                   <td className="border px-2 py-1 text-center">{row["판매가"]}</td>
                   <td className="border px-2 py-1">{row["상품명"]}</td>
