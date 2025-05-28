@@ -1,0 +1,32 @@
+name: Scheduled Lookpin Crawler
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # 매 6시간마다 실행
+  workflow_dispatch:      # 수동 실행도 가능
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Node 설치
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Puppeteer 크롤링 실행
+        run: |
+          npm install puppeteer
+          node scripts/crawlLookpin.js
+
+      - name: 결과 파일 커밋 및 푸시
+        run: |
+          git config --global user.name 'dspero0501'
+          git config --global user.email 'redstar000@naver.com'
+          git add data/
+          git commit -m "chore: update ranking data [bot]" || echo "No changes"
+          git push
