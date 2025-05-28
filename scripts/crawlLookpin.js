@@ -14,7 +14,8 @@ const path = require("path");
   await page.goto("https://www.lookpin.co.kr/home", { waitUntil: "networkidle2" });
 
   // 기다리는 시간 (데이터가 다 뜰 때까지)
-  await page.waitForTimeout(5000);
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
 
   const data = await page.evaluate(() => {
     const items = Array.from(document.querySelectorAll(".sc-88a90ba8-0.eYtZDO"));
